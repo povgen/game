@@ -1,0 +1,42 @@
+﻿
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body style="margin:0;">
+	<canvas id="canv"></canvas>
+
+<script src="key.js"></script>
+<script src="hero.js"></script>
+<script>
+    var canv = document.getElementById('canv');
+    var ctx = canv.getContext('2d');
+    var hero = new Hero("img/hero (2).png", ctx, 2);
+    var bg = new Image();
+    bg.src = "img/bg.jpg";
+    canv.width = 1024; // window.innerWidth;
+    canv.height = 1024; // window.innerHeight;
+
+    function engine() {
+        ctx.clearRect(0, 0, canv.width, canv.height);
+        ctx.drawImage(bg, 0, 0);
+
+        if (isKeyDown('W'))
+            hero.moveUp();
+        else if (isKeyDown('S'))
+            hero.moveDown();
+        else if (isKeyDown('D'))
+            hero.moveRight();
+        else if (isKeyDown('A'))
+            hero.moveLeft();
+        else
+            hero.stay();
+
+}
+
+	
+</script>
+</body>
+</html>

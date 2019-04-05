@@ -1,0 +1,36 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial=scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Key</title>
+</head>
+<body>
+    <canvas id="canvas" width="400" height="512"></canvas>
+    <script src="script1.js"></script>
+    <div id="key"></div>
+    <script type="text/javascript">
+
+        function engine() {
+
+            ctx.clearRect(0, 0, 450, 512);
+
+
+            if (isKeyDown('W'))
+                ctx.fillText('W', 40, 40);
+
+            if (isKeyDown('S'))
+                ctx.fillText('S', 40, 60);
+
+            if (isKeyDown('D'))
+                ctx.fillText('D', 40, 80);
+
+            if (isKeyDown('A'))
+                ctx.fillText('A', 40, 100);
+            }
+
+    </script>
+</body>
+</html>
