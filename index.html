@@ -23,11 +23,13 @@
 
     function engine() {
         ctx.clearRect(0, 0, canv.width, canv.height);
-        ctx.drawImage(bg, 0, 0);
+        //ctx.drawImage(bg, 0, 0);
         
     
-        //arrOfTile[1].onload = render();
+        arrOfTile[1].onload = render();
 
+        if (hero.dir == 0) 
+            hero.arrowFly();
 
         if (isKeyDown('W'))
             hero.moveUp();
@@ -42,7 +44,8 @@
         else
             hero.stay();
 
-        hero.arrowFly();
+        if (hero.dir != 0) 
+            hero.arrowFly();
 }
 
 	
