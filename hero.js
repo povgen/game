@@ -26,36 +26,51 @@ class Hero {
             10, //вниз
             11  //вправо
         ]; 
-      
+        this.posShoot = [
+            17, //вверх
+            18, //влево
+            19, //вниз
+            20 //вправо
+        ]
         this.dir    = 2; // то куда будет смотреть герой не в движении, стандартно вниз
     }
 
-    moveAnimate(sx, sy) {
-        this.ctx.drawImage(this.sprite, sx + this.width * this.i, sy, this.width, this.height, this.x, this.y, this.width, this.height);
+    moveAnimate(sy) {
+        this.ctx.drawImage(this.sprite, this.width * this.i, sy, this.width, this.height, this.x, this.y, this.width, this.height);
         this.i++;
         if (this.i == this.count)
             this.i = 0;
     }
 
+    shootAnimate(sy) {
+        this.ctx.drawImage(this.sprite, this.width * this.i, sy, this.width, this.height, this.x, this.y, this.width, this.height);
+        this.i++;
+        if (this.i == this.count)
+            this.i = 0;
+    }
+
+    shoot() {
+        this.shootAnimate()
+    }
 
     moveLeft() {
         this.x -= this.speed * this.getAcceleration(this.x - this.speed, this.y);
-        this.moveAnimate(0, this.height * this.pos[1]);
+        this.moveAnimate(this.height * this.pos[1]);
         this.dir = 1;
     }
     moveRight() {
         this.x += this.speed * this.getAcceleration(this.x + this.speed, this.y);
-        this.moveAnimate(0, this.height*this.pos[3]);
+        this.moveAnimate(this.height*this.pos[3]);
         this.dir = 3;
     }
     moveUp() {
         this.y -= this.speed *this.getAcceleration(this.x, this.y - this.speed);
-        this.moveAnimate(0, this.height*this.pos[0]);
+        this.moveAnimate(this.height*this.pos[0]);
         this.dir = 0;
     }
     moveDown() {
         this.y += this.speed * this.getAcceleration(this.x, this.y + this.speed);
-        this.moveAnimate(0, this.height*this.pos[2]);
+        this.moveAnimate(this.height*this.pos[2]);
         this.dir = 2;
     }
     stay() {
