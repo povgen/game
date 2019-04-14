@@ -15,9 +15,12 @@ class Hero {
         this.ctx        = ctx;  //—сылка на canvas, точнее на его контест
         this.width      = 64;   //Ўирина моделки в спрайте
         this.height     = 64;  //¬ысота моделки в спрайте
-        this.count      = 9;   //количество кадров анимации передвижени€ в спрайте
         this.countShoot = 13;  // оличество кадров анимации стрельбы
-        this.i          = 0;   //номер кадра
+        this.slowShoot  = 3;   //«амедление анимации стрельбы в n раз  
+        this.iShoot     = 0;   //номер кадра стрельбы
+        this.countMove  = 9;   //количество кадров анимации передвижени€ в спрайте
+        this.slowMove   = 5;   //«амедление анимации передвижени€ стрельбы в n раз  
+        this.iMove      = 0;   //номер кадра
 
         // номера строк спрайта с напревлинми движени€ анимации
         this.pos = [
@@ -27,54 +30,55 @@ class Hero {
             11  //вправо
         ]; 
         this.posShoot = [
-            17, //вверх
-            18, //влево
-            19, //вниз
-            20 //вправо
+            16, //вверх
+            17, //влево
+            18, //вниз
+            19 //вправо
         ]
         this.dir    = 2; // то куда будет смотреть герой не в движении, стандартно вниз
     }
 
-    moveAnimate(sy) {
-        this.ctx.drawImage(this.sprite, this.width * this.i, sy, this.width, this.height, this.x, this.y, this.width, this.height);
-        this.i++;
-        if (this.i == this.count)
-            this.i = 0;
+    moveAnimate(y) {
+        this.ctx.drawImage(this.sprite, this.width * Math.floor(this.iMove / this.slowMove), y * this.height, this.width, this.height, this.x, this.y, this.width, this.height);
+        this.iMove++;
+        if (Math.floor(this.iMove / this.slowMove) == this.countMove)
+            this.iMove = 0;
     }
 
-    shootAnimate(sy) {
-        this.ctx.drawImage(this.sprite, this.width * this.i, sy, this.width, this.height, this.x, this.y, this.width, this.height);
-        this.i++;
-        if (this.i == this.count)
-            this.i = 0;
+    shootAnimate(y) {
+        this.ctx.drawImage(this.sprite, this.width * Math.floor(this.iShoot/this.slowShoot), y * this.height, this.width, this.height, this.x, this.y, this.width, this.height);
+        this.iShoot++;
+        if (Math.floor(this.iShoot / this.slowShoot) == this.countShoot)
+            this.iShoot = 0;
     }
 
     shoot() {
-        this.shootAnimate()
+        this.shootAnimate(this.posShoot[this.dir]);
     }
 
     moveLeft() {
         this.x -= this.speed * this.getAcceleration(this.x - this.speed, this.y);
-        this.moveAnimate(this.height * this.pos[1]);
+        this.moveAnimate(this.pos[1]);
         this.dir = 1;
     }
     moveRight() {
         this.x += this.speed * this.getAcceleration(this.x + this.speed, this.y);
-        this.moveAnimate(this.height*this.pos[3]);
+        this.moveAnimate(this.pos[3]);
         this.dir = 3;
     }
     moveUp() {
         this.y -= this.speed *this.getAcceleration(this.x, this.y - this.speed);
-        this.moveAnimate(this.height*this.pos[0]);
+        this.moveAnimate(this.pos[0]);
         this.dir = 0;
     }
     moveDown() {
         this.y += this.speed * this.getAcceleration(this.x, this.y + this.speed);
-        this.moveAnimate(this.height*this.pos[2]);
+        this.moveAnimate(this.pos[2]);
         this.dir = 2;
     }
     stay() {
         this.ctx.drawImage(this.sprite, 0, this.pos[this.dir] * this.height, this.width, this.height, this.x, this.y, this.width, this.height);
+        this.iShoot = 0;
     }
     getAcceleration(x, y) {
 

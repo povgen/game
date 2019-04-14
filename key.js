@@ -2,7 +2,8 @@ var keys = {
 	'W' : 87,
 	'S' : 83,
 	'A' : 65,
-	'D' : 68
+    'D': 68,
+    'Space': 32
 };
 
 var keyDown = {};
@@ -30,7 +31,8 @@ function gameEngine() {
 }
 
 window.onload = function () {
-	window.onkeydown = function (e) {
+    window.onkeydown = function (e) {
+       // console.log(e.keyCode);
 		setKey(e.keyCode);
 	};
 
