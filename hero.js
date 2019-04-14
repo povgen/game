@@ -1,3 +1,33 @@
+class Arrow {
+    constructor(x, y, dir, ctx) {
+        this.x = x;
+        this.y = y;
+        this.curDir = dir;
+        this.dir = {
+            'Up'   : 0,
+            'Left' : 1,
+            'Down' : 2,
+            'Right': 3
+        };
+        this.ctx = ctx;
+        this.img = new Image();
+        this.img.src = "img/arrow.png";
+        this.speed = 10;
+    }
+    fly() {
+        if (this.curDir == this.dir['Right'])
+            this.x += this.speed;
+        if (this.curDir == this.dir['Left'])
+            this.x -= this.speed;
+        if (this.curDir == this.dir['Down'])
+            this.y += this.speed;
+        if (this.curDir == this.dir['Up'])
+            this.y -= this.speed;
+
+        this.ctx.drawImage(this.img, this.x, this.y)
+
+    }
+}
 class Hero {
     constructor(src, ctx, map, arrOfTile, speed = 20) {
         this.arrOfTile = arrOfTile;
@@ -16,11 +46,13 @@ class Hero {
         this.width      = 64;   //Ширина моделки в спрайте
         this.height     = 64;  //Высота моделки в спрайте
         this.countShoot = 13;  //Количество кадров анимации стрельбы
-        this.slowShoot  = 3;   //Замедление анимации стрельбы в n раз  
+        this.slowShoot  = 5;   //Замедление анимации стрельбы в n раз  
         this.iShoot     = 0;   //номер кадра стрельбы
         this.countMove  = 9;   //количество кадров анимации передвижения в спрайте
         this.slowMove   = 5;   //Замедление анимации передвижения стрельбы в n раз  
         this.iMove      = 0;   //номер кадра
+        this.arrows     = [];  
+
 
         // номера строк спрайта с напревлинми движения анимации
         this.pos = [
@@ -39,6 +71,7 @@ class Hero {
     }
 
     moveAnimate(y) {
+        this.iShoot = 0;
         this.ctx.drawImage(this.sprite, this.width * Math.floor(this.iMove / this.slowMove), y * this.height, this.width, this.height, this.x, this.y, this.width, this.height);
         this.iMove++;
         if (Math.floor(this.iMove / this.slowMove) == this.countMove)
@@ -54,6 +87,16 @@ class Hero {
 
     shoot() {
         this.shootAnimate(this.posShoot[this.dir]);
+        if (this.iShoot / this.slowShoot == 9.0) {
+            this.arrows.push(new Arrow(this.x + 20, this.y + 30, this.dir, this.ctx));
+        }
+    }
+
+    arrowFly() {
+        for (let i = 0; i < this.arrows.length; i++) {
+            //this.arrow.fly();
+            this.arrows[i].fly();
+        }
     }
 
     moveLeft() {
@@ -77,8 +120,8 @@ class Hero {
         this.dir = 2;
     }
     stay() {
-        this.ctx.drawImage(this.sprite, 0, this.pos[this.dir] * this.height, this.width, this.height, this.x, this.y, this.width, this.height);
         this.iShoot = 0;
+        this.ctx.drawImage(this.sprite, 0, this.pos[this.dir] * this.height, this.width, this.height, this.x, this.y, this.width, this.height);
     }
     getAcceleration(x, y) {
 

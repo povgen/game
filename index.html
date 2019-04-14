@@ -18,14 +18,16 @@
     var bg = new Image();
     bg.src = "img/bg.jpg";
     canv.width = 1024; // window.innerWidth;
-    canv.height = 1024; // window.innerHeight;
+    canv.height = 800
+    ; // window.innerHeight;
 
     function engine() {
         ctx.clearRect(0, 0, canv.width, canv.height);
-        //ctx.drawImage(bg, 0, 0);
+        ctx.drawImage(bg, 0, 0);
         
     
-    arrOfTile[1].onload = render();
+        //arrOfTile[1].onload = render();
+
 
         if (isKeyDown('W'))
             hero.moveUp();
@@ -40,6 +42,7 @@
         else
             hero.stay();
 
+        hero.arrowFly();
 }
 
 	
