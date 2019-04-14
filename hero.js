@@ -2,27 +2,60 @@ class Arrow {
     constructor(x, y, dir, ctx) {
         this.x = x;
         this.y = y;
+        this.willX = x;
+        this.willY = y;
         this.curDir = dir;
         this.dir = {
-            'Up'   : 0,
-            'Left' : 1,
-            'Down' : 2,
+            'Up': 0,
+            'Left': 1,
+            'Down': 2,
             'Right': 3
         };
+        //Пути для изображения стрелы
+        let src = [
+            'img/arrow_u.png', //Вверх
+            'img/arrow_l.png', //Влево
+            'img/arrow_d.png', //Вниз
+            'img/arrow_r.png'  //Вправо
+        ];
         this.ctx = ctx;
         this.img = new Image();
-        this.img.src = "img/arrow.png";
-        this.speed = 10;
+        this.img.src = src[dir];
+        this.speed = 1;
+        if (this.curDir == this.dir['Right']) {
+            this.x += 35;
+            this.y += 32;
+            this.willY -= 13;
+        }
+        if (this.curDir == this.dir['Left']) {
+            this.y += 32;
+            this.willY -= 13;
+        }
+        if (this.curDir == this.dir['Down']) {
+            this.x += 30;
+            this.y += 40;
+        }
+        if (this.curDir == this.dir['Up']) {
+            this.x += 22;
+        }
     }
     fly() {
-        if (this.curDir == this.dir['Right'])
+        if (this.curDir == this.dir['Right']) {
             this.x += this.speed;
-        if (this.curDir == this.dir['Left'])
+            this.willX = this.x + this.speed;
+        }
+        if (this.curDir == this.dir['Left']) {
             this.x -= this.speed;
-        if (this.curDir == this.dir['Down'])
+            this.willX = this.x - (this.speed + 31);
+        }
+        if (this.curDir == this.dir['Down']) {
             this.y += this.speed;
-        if (this.curDir == this.dir['Up'])
+            this.willY = this.y + (this.speed - 20);
+        }
+        if (this.curDir == this.dir['Up']) {
             this.y -= this.speed;
+            this.willY = this.y - (this.speed + 50);
+        }
 
         this.ctx.drawImage(this.img, this.x, this.y)
 
@@ -88,7 +121,7 @@ class Hero {
     shoot() {
         this.shootAnimate(this.posShoot[this.dir]);
         if (this.iShoot / this.slowShoot == 9.0) {
-            this.arrows.push(new Arrow(this.x + 20, this.y + 30, this.dir, this.ctx));
+            this.arrows.push(new Arrow(this.x, this.y, this.dir, this.ctx));
         }
     }
 
@@ -96,7 +129,11 @@ class Hero {
         for (let i = 0; i < this.arrows.length; i++) {
             //this.arrow.fly();
             this.arrows[i].fly();
+            if (this.getAcceleration(this.arrows[i].willX, this.arrows[i].willY) == 0) 
+                this.arrows.splice(i, 1);
+            
         }
+
     }
 
     moveLeft() {
@@ -128,6 +165,11 @@ class Hero {
         x -= 20;
         let tileX = Math.floor(y / 50) + 1;
         let tileY = Math.floor(x / 50) + 1;
-        return this.arrOfTile[this.map[tileX][tileY]].acl;
+        try {
+            return this.arrOfTile[this.map[tileX][tileY]].acl;
+        }
+        catch {
+            return 0;
+        }
     } 
 }
