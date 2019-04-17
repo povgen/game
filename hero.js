@@ -5,6 +5,7 @@ class Arrow {
         this.willX = x;
         this.willY = y;
         this.curDir = dir;
+        this.timeLife = 600;
         this.dir = {
             'Up': 0,
             'Left': 1,
@@ -21,8 +22,9 @@ class Arrow {
         this.ctx = ctx;
         this.img = new Image();
         this.img.src = src[dir];
-        this.speed = 1;
-        if (this.curDir == this.dir['Right']) {
+        this.speed = 15;
+        // изменение начальной позиции стрелы,
+        if (this.curDir == this.dir['Right']) { 
             this.x += 35;
             this.y += 32;
             this.willY -= 13;
@@ -36,7 +38,7 @@ class Arrow {
             this.y += 40;
         }
         if (this.curDir == this.dir['Up']) {
-            this.x += 22;
+            this.x += 30;
         }
     }
     fly() {
@@ -60,21 +62,37 @@ class Arrow {
         this.ctx.drawImage(this.img, this.x, this.y)
 
     }
+    stay() {
+        if (this.curDir == this.dir['Right']) {
+            this.x = this.willX - this.willX % 50 + 20; 
+        }
+        if (this.curDir == this.dir['Left']) {
+            this.x = this.willX - this.willX % 50 + 50;
+        }
+        if (this.curDir == this.dir['Down']) {
+            this.y = this.willY - this.willY % 50 + 20;
+        }
+        if (this.curDir == this.dir['Up']) {
+            this.y = this.willY - this.willY % 50 + 100;
+        }
+        this.ctx.drawImage(this.img, this.x, this.y)
+        this.timeLife--;
+    }
 }
 class Hero {
-    constructor(src, ctx, map, arrOfTile, speed = 20) {
+    constructor(src, ctx, map, arrOfTile, speed = 20, x = 0, y = 0) {
         this.arrOfTile = arrOfTile;
         this.sprite = new Image();
         this.sprite.src = src; // путь/ссылка на спрайт
         // позици€ геро€
-        this.x = 0;
-        this.y = 0;
+        this.x = x;
+        this.y = y;
 
         this.map = map;
        // this.tileX = 0; // Ќомер тайла по X
        // this.tileY = 0; // Ќомер тайла по Y
-
-        this.speed      = speed;
+        this.speed      = speed;//базова€ скорость
+        this.curSpeed   = speed;//“екуща€ скорость
         this.ctx        = ctx;  //—сылка на canvas, точнее на его контест
         this.width      = 64;   //Ўирина моделки в спрайте
         this.height     = 64;  //¬ысота моделки в спрайте
@@ -84,7 +102,9 @@ class Hero {
         this.countMove  = 9;   //количество кадров анимации передвижени€ в спрайте
         this.slowMove   = 5;   //«амедление анимации передвижени€ стрельбы в n раз  
         this.iMove      = 0;   //номер кадра
-        this.arrows     = [];  
+        this.arrows     = [];
+        this.acl = 2;
+        this.HP = 100;
 
 
         // номера строк спрайта с напревлинми движени€ анимации
@@ -103,6 +123,8 @@ class Hero {
         this.dir    = 2; // то куда будет смотреть герой не в движении, стандартно вниз
     }
 
+        
+
     moveAnimate(y) {
         this.iShoot = 0;
         this.ctx.drawImage(this.sprite, this.width * Math.floor(this.iMove / this.slowMove), y * this.height, this.width, this.height, this.x, this.y, this.width, this.height);
@@ -120,7 +142,14 @@ class Hero {
 
     shoot() {
         this.shootAnimate(this.posShoot[this.dir]);
-        if (this.iShoot / this.slowShoot == 9.0) {
+        if (this.iShoot / this.slowShoot == 9.0 &&
+            ((this.dir == 0 && this.getAcceleration(this.x, this.y - 50) != 0) || //ѕроверка можно ли выстрелнуть вверх
+            (this.dir == 1 && this.getAcceleration(this.x - 50, this.y - 10) != 0) || //ѕроверка можно ли выстрелнуть влево
+            (this.dir == 2 && this.getAcceleration(this.x, this.y + 15) != 0) || //ѕроверка можно ли выстрелнуть вниз
+            (this.dir == 3 && this.getAcceleration(this.x + 50, this.y - 10) != 0) //ѕроверка можно ли выстрелнуть вправо
+            )
+        ) {
+
             this.arrows.push(new Arrow(this.x, this.y, this.dir, this.ctx));
         }
     }
@@ -128,33 +157,54 @@ class Hero {
     arrowFly() {
         for (let i = 0; i < this.arrows.length; i++) {
             //this.arrow.fly();
-            this.arrows[i].fly();
             if (this.getAcceleration(this.arrows[i].willX, this.arrows[i].willY) == 0) 
+                this.arrows[i].stay();
+            else
+                this.arrows[i].fly();
+            if (this.arrows[i].timeLife == 0)
                 this.arrows.splice(i, 1);
-            
+        }
+
+    }
+
+    checkHitArrow(arrows) {
+
+        for (let i = 0; i < arrows.length; i++) {
+            if (arrows[i].x >= this.x && arrows[i].y >= this.y && arrows[i].x <= this.x + this.width && arrows[i].y <= this.y + this.height) { 
+                this.HP -= 50;
+                arrows.splice(i, 1);
+            }
         }
 
     }
 
     moveLeft() {
-        this.x -= this.speed * this.getAcceleration(this.x - this.speed, this.y);
+        this.x -= this.curSpeed * this.getAcceleration(this.x - this.curSpeed, this.y);
         this.moveAnimate(this.pos[1]);
         this.dir = 1;
     }
     moveRight() {
-        this.x += this.speed * this.getAcceleration(this.x + this.speed, this.y);
+        this.x += this.curSpeed * this.getAcceleration(this.x + this.curSpeed, this.y);
         this.moveAnimate(this.pos[3]);
         this.dir = 3;
     }
     moveUp() {
-        this.y -= this.speed *this.getAcceleration(this.x, this.y - this.speed);
+        this.y -= this.curSpeed *this.getAcceleration(this.x, this.y - this.curSpeed);
         this.moveAnimate(this.pos[0]);
         this.dir = 0;
     }
     moveDown() {
-        this.y += this.speed * this.getAcceleration(this.x, this.y + this.speed);
+        this.y += this.curSpeed * this.getAcceleration(this.x, this.y + this.curSpeed);
         this.moveAnimate(this.pos[2]);
         this.dir = 2;
+    }
+    speedUp() {
+        this.curSpeed = this.speed * this.acl;
+        //  this.slowMove = 2;
+    }
+    speedDown() {
+        this.curSpeed = this.speed;
+        //this.slowMove = 5;
     }
     stay() {
         this.iShoot = 0;

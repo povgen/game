@@ -1,4 +1,4 @@
-﻿
+﻿ 
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,16 +10,19 @@
 
 <script src="key.js"></script>
 <script src="hero.js"></script>
+<script src="enemy.js"></script>
 <script src="map.js"></script>
 <script>
     var canv = document.getElementById('canv');
     var ctx = canv.getContext('2d');
-    var hero = new Hero("img/hero_sprite.png", ctx, map,arrOfTile, 2);
+    var hero = new Hero("img/hero_sprite.png", ctx, map,arrOfTile, 3);
     var bg = new Image();
     bg.src = "img/bg.jpg";
     canv.width = 1024; // window.innerWidth;
-    canv.height = 800
-    ; // window.innerHeight;
+    canv.height = 800; // window.innerHeight;
+
+
+    var blackMen = new Enemy("img/hero2.png", ctx, map, arrOfTile, 3, 500, 500);
 
     function engine() {
         ctx.clearRect(0, 0, canv.width, canv.height);
@@ -28,9 +31,14 @@
     
         arrOfTile[1].onload = render();
 
-        if (hero.dir == 0) 
-            hero.arrowFly();
 
+        hero.arrowFly();
+        if (isKeyDown('Shift')) {
+            hero.speedUp();
+        }
+        else {
+            hero.speedDown();
+        }
         if (isKeyDown('W'))
             hero.moveUp();
         else if (isKeyDown('S'))
@@ -44,8 +52,28 @@
         else
             hero.stay();
 
-        if (hero.dir != 0) 
-            hero.arrowFly();
+        blackMen.arrowFly();
+     
+        if (isKeyDown('Up'))
+            blackMen.moveUp();
+        else if (isKeyDown('Down'))
+            blackMen.moveDown();
+        else if (isKeyDown('Right'))
+            blackMen.moveRight();
+        else if (isKeyDown('Left'))
+            blackMen.moveLeft();
+        else if (isKeyDown('Enter'))
+            blackMen.shoot();
+        else
+            blackMen.stay();
+        hero.checkHitArrow(blackMen.arrows);
+        blackMen.checkHitArrow(hero.arrows);
+
+        if (hero.HP == 0) 
+            alert('Game over, win blue');
+
+        if (blackMen.HP == 0)
+            alert('Game over, win gold');
 }
 
 	
